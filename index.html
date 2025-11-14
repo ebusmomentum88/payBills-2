@@ -9,54 +9,56 @@
 </head>
 <body>
   <nav class="navbar">
-    <h1>PayMoment</h1>
+    <h1>💳 PayMoment</h1>
     <div id="nav-right">
-      <span id="balance">Balance: ₦5000</span>
+      <span id="balance"></span>
       <button id="logoutBtn">Logout</button>
     </div>
   </nav>
 
+  <!-- Auth Section -->
   <div id="auth-section" class="card">
     <h2 id="authTitle">Login</h2>
     <input id="name" placeholder="Full Name" style="display:none" />
-    <input id="email" placeholder="Email" />
+    <input id="email" placeholder="Email" type="email" />
     <input id="password" type="password" placeholder="Password" />
     <button id="authBtn">Login</button>
     <p id="toggleAuth">No account? <a href="#" id="switchAuth">Sign Up</a></p>
   </div>
 
+  <!-- Dashboard -->
   <div id="dashboard" style="display:none">
-    <h2>Available Services</h2>
+    <h2>📱 Available Services</h2>
     <div class="services">
-      <div class="card service" onclick="showService('Airtime')">
-        <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" />
+      <div class="service" data-type="Airtime">
+        <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" alt="Airtime" />
         <p>Airtime</p>
       </div>
-      <div class="card service" onclick="showService('Data')">
-        <img src="https://cdn-icons-png.flaticon.com/512/1828/1828919.png" />
+      <div class="service" data-type="Data">
+        <img src="https://cdn-icons-png.flaticon.com/512/1828/1828919.png" alt="Data" />
         <p>Data</p>
       </div>
-      <div class="card service" onclick="showService('Electricity')">
-        <img src="https://cdn-icons-png.flaticon.com/512/1688/1688411.png" />
+      <div class="service" data-type="Electricity">
+        <img src="https://cdn-icons-png.flaticon.com/512/1688/1688411.png" alt="Electricity" />
         <p>Electricity</p>
       </div>
-      <div class="card service" onclick="showService('Transportation')">
-        <img src="https://cdn-icons-png.flaticon.com/512/1072/1072322.png" />
+      <div class="service" data-type="Transportation">
+        <img src="https://cdn-icons-png.flaticon.com/512/1072/1072322.png" alt="Transportation" />
         <p>Transportation</p>
       </div>
-      <div class="card service" onclick="showService('TV')">
-        <img src="https://cdn-icons-png.flaticon.com/512/0/89.png" />
+      <div class="service" data-type="TV">
+        <img src="https://cdn-icons-png.flaticon.com/512/0/89.png" alt="TV" />
         <p>TV Subscription</p>
       </div>
     </div>
+    <button id="depositBtn">💰 Deposit Money</button>
 
-    <button id="depositBtn">Deposit Money</button>
-
+    <!-- Service Payment Form -->
     <div id="serviceForm" class="card" style="display:none">
       <h3 id="serviceTitle"></h3>
-      <select id="optionSelect"></select>
-      <input id="amount" placeholder="Amount" type="number" />
-      <button id="payBtn">Pay</button>
+      <div id="formFields"></div>
+      <button id="payBtn">Pay Now</button>
+      <button class="close-btn" onclick="document.getElementById('serviceForm').style.display='none'">Close</button>
     </div>
   </div>
 
