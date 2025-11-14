@@ -1,70 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PayMoment</title>
-  <link rel="stylesheet" href="style.css" />
-  <script src="https://js.paystack.co/v1/inline.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PayMoment</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 20px; }
+  #dashboard, #serviceForm, #logoutBtn { display: none; }
+  button { margin: 5px; padding: 10px 20px; cursor: pointer; }
+  input, select { margin: 5px 0; padding: 8px; width: 100%; }
+  .paybill-btn { background-color: #007bff; color: white; border: none; }
+  #logoutBtn { background-color: #dc3545; color: white; border: none; }
+  #depositBtn { background-color: #28a745; color: white; border: none; }
+</style>
 </head>
 <body>
-  <nav class="navbar">
-    <h1>💳 PayMoment</h1>
-    <div id="nav-right">
-      <span id="balance"></span>
-      <button id="logoutBtn">Logout</button>
-    </div>
-  </nav>
 
-  <!-- Auth Section -->
-  <div id="auth-section" class="card">
-    <h2 id="authTitle">Login</h2>
-    <input id="name" placeholder="Full Name" style="display:none" />
-    <input id="email" placeholder="Email" type="email" />
-    <input id="password" type="password" placeholder="Password" />
-    <button id="authBtn">Login</button>
-    <p id="toggleAuth">No account? <a href="#" id="switchAuth">Sign Up</a></p>
+<h2>PayMoment</h2>
+
+<!-- AUTH SECTION -->
+<div id="auth-section">
+  <h3 id="authTitle">Login</h3>
+  <input type="text" id="name" placeholder="Name" style="display:none;">
+  <input type="email" id="email" placeholder="Email">
+  <input type="password" id="password" placeholder="Password">
+  <button id="authBtn">Login</button>
+  <p id="toggleAuth">No account? <a href="#" id="switchAuth">Sign Up</a></p>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+  <h3>Dashboard</h3>
+  <p id="balance">Balance: ₦0</p>
+  <button id="depositBtn">Deposit</button>
+  <button id="logoutBtn">Logout</button>
+
+  <h4>Pay Bills</h4>
+  <button class="paybill-btn" data-type="Airtime">Airtime</button>
+  <button class="paybill-btn" data-type="Data">Data</button>
+  <button class="paybill-btn" data-type="Electricity">Electricity</button>
+  <button class="paybill-btn" data-type="TV">TV</button>
+  <button class="paybill-btn" data-type="Transportation">Transport</button>
+
+  <!-- Service Form -->
+  <div id="serviceForm" style="display:none;">
+    <h3 id="serviceTitle"></h3>
+    <select id="optionSelect"></select>
+    <input type="number" id="amount" placeholder="Enter Amount">
+    <button id="payBtn">Pay</button>
   </div>
+</div>
 
-  <!-- Dashboard -->
-  <div id="dashboard" style="display:none">
-    <h2>📱 Available Services</h2>
-    <div class="services">
-      <div class="service" data-type="Airtime">
-        <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" alt="Airtime" />
-        <p>Airtime</p>
-      </div>
-      <div class="service" data-type="Data">
-        <img src="https://cdn-icons-png.flaticon.com/512/1828/1828919.png" alt="Data" />
-        <p>Data</p>
-      </div>
-      <div class="service" data-type="Electricity">
-        <img src="https://cdn-icons-png.flaticon.com/512/1688/1688411.png" alt="Electricity" />
-        <p>Electricity</p>
-      </div>
-      <div class="service" data-type="Transportation">
-        <img src="https://cdn-icons-png.flaticon.com/512/1072/1072322.png" alt="Transportation" />
-        <p>Transportation</p>
-      </div>
-      <div class="service" data-type="TV">
-        <img src="https://cdn-icons-png.flaticon.com/512/0/89.png" alt="TV" />
-        <p>TV Subscription</p>
-      </div>
-    </div>
-    <button id="depositBtn">💰 Deposit Money</button>
-
-    <!-- Service Payment Form -->
-    <div id="serviceForm" class="card" style="display:none">
-      <h3 id="serviceTitle"></h3>
-      <div id="formFields"></div>
-      <button id="payBtn">Pay Now</button>
-      <button class="close-btn" onclick="document.getElementById('serviceForm').style.display='none'">Close</button>
-    </div>
-  </div>
-
-  <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
+
+
 
 
 
