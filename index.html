@@ -3,28 +3,27 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PayMoment</title>
+<title>PayMoment - Opay Style</title>
 <style>
-  body { font-family: Arial, sans-serif; margin: 20px; }
-  #dashboard, #serviceForm, #logoutBtn { display: none; }
-  button { margin: 5px; padding: 10px 20px; cursor: pointer; }
-  input, select { margin: 5px 0; padding: 8px; width: 100%; }
-  .paybill-btn { display:inline-block; margin:5px; padding:10px 15px; cursor:pointer; background:#007bff; color:#fff; border:none; border-radius:5px; }
-  #logoutBtn { background-color: #dc3545; color: white; border: none; border-radius:5px; }
-  #depositBtn { background-color: #28a745; color: white; border: none; border-radius:5px; }
-  #auth-section { max-width: 400px; margin: auto; }
-  #dashboard { max-width: 600px; margin: auto; }
-  #serviceForm { margin-top: 20px; }
-  .extra-input { margin:5px 0; padding:8px; width:100%; }
+  body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f2f2f2; }
+  header { background:#4CAF50; color:white; padding:20px; text-align:center; }
+  #auth-section, #dashboard { max-width:400px; margin:30px auto; padding:20px; background:white; border-radius:10px; box-shadow:0 0 10px rgba(0,0,0,0.1);}
+  input, select, button { width:100%; padding:10px; margin:5px 0; border-radius:5px; border:1px solid #ccc; }
+  button { background:#4CAF50; color:white; border:none; cursor:pointer; }
+  button:hover { background:#45a049; }
+  #bills button { margin:5px 0; }
+  #balance { font-weight:bold; margin-bottom:15px; }
+  #logoutBtn { background:#f44336; }
 </style>
 </head>
 <body>
 
-<h2 style="text-align:center;">PayMoment</h2>
+<header>
+  <h1>PayMoment</h1>
+</header>
 
-<!-- AUTH SECTION -->
 <div id="auth-section">
-  <h3 id="authTitle">Login</h3>
+  <h2 id="authTitle">Login</h2>
   <input type="text" id="name" placeholder="Name" style="display:none;">
   <input type="email" id="email" placeholder="Email">
   <input type="password" id="password" placeholder="Password">
@@ -32,32 +31,26 @@
   <p id="toggleAuth">No account? <a href="#" id="switchAuth">Sign Up</a></p>
 </div>
 
-<!-- DASHBOARD -->
-<div id="dashboard">
-  <h3>Dashboard</h3>
+<div id="dashboard" style="display:none;">
   <p id="balance">Balance: ₦0</p>
-  <button id="depositBtn">Deposit</button>
-  <button id="logoutBtn">Logout</button>
-
-  <h4>Pay Bills</h4>
-  <button class="paybill-btn" data-type="Airtime">Airtime</button>
-  <button class="paybill-btn" data-type="Data">Data</button>
-  <button class="paybill-btn" data-type="Electricity">Electricity</button>
-  <button class="paybill-btn" data-type="TV">TV</button>
-  <button class="paybill-btn" data-type="Transportation">Transport</button>
-
-  <!-- Service Form -->
-  <div id="serviceForm" style="display:none;">
-    <h3 id="serviceTitle"></h3>
-    <select id="optionSelect"></select>
-    <input type="number" id="amount" placeholder="Enter Amount">
-    <button id="payBtn">Pay</button>
+  <input type="number" id="depositAmount" placeholder="Enter deposit amount">
+  <button onclick="deposit()">Deposit</button>
+  <div id="bills">
+    <h3>Pay Bills</h3>
+    <button onclick="payBill('Airtime')">Airtime</button>
+    <button onclick="payBill('Data')">Data</button>
+    <button onclick="payBill('Electricity')">Electricity</button>
+    <button onclick="payBill('TV')">TV Subscription</button>
+    <button onclick="payBill('Transport')">Transport</button>
   </div>
+  <button id="logoutBtn" style="display:none;">Logout</button>
 </div>
 
 <script src="script.js"></script>
 </body>
 </html>
+
+
 
 
 
