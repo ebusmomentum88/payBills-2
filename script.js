@@ -1,7 +1,7 @@
 const API = "https://paymomentbackend.onrender.com/api";
 let token = localStorage.getItem("token");
 
-// -------- AUTH ELEMENTS --------
+// Elements
 const authSection = document.getElementById("auth-section");
 const dashboard = document.getElementById("dashboard");
 const authBtn = document.getElementById("authBtn");
@@ -13,10 +13,10 @@ const passwordInput = document.getElementById("password");
 const logoutBtn = document.getElementById("logoutBtn");
 let isLogin = true;
 
-// Show dashboard if token exists
+// Show dashboard if logged in
 if (token) showDashboard();
 
-// -------- SWITCH LOGIN/SIGNUP --------
+// Toggle Login/Signup
 switchAuth.onclick = (e) => {
   e.preventDefault();
   isLogin = !isLogin;
@@ -29,147 +29,111 @@ switchAuth.onclick = (e) => {
   document.getElementById("switchAuth").onclick = switchAuth.onclick;
 };
 
-// -------- LOGIN / SIGNUP --------
+// Login/Signup
 authBtn.onclick = async () => {
   let email = emailInput.value.trim().toLowerCase();
   const password = passwordInput.value.trim();
   const name = nameInput.value.trim();
 
-  if (!email || !password || (!isLogin && !name)) {
-    alert("Please fill all fields");
-    return;
-  }
+  if (!email || !password || (!isLogin && !name)) return alert("Fill all fields");
 
   const endpoint = isLogin ? "/auth/login" : "/auth/signup";
   const body = isLogin ? { email, password } : { name, email, phone: "", password };
 
   try {
     const res = await fetch(`${API}${endpoint}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify(body)
     });
     const data = await res.json();
-
-    if (data.token) {
+    if (data.token){
       localStorage.setItem("token", data.token);
       localStorage.setItem("email", email);
       showDashboard();
-    } else {
-      alert(data.message || "Action completed");
-    }
-  } catch (err) {
-    alert("Connection error");
-    console.error(err);
-  }
+    } else alert(data.message);
+  } catch(err){ alert("Connection error"); console.error(err); }
 };
 
-// -------- SHOW DASHBOARD --------
-async function showDashboard() {
+// Show dashboard
+async function showDashboard(){
   authSection.style.display = "none";
   dashboard.style.display = "block";
   logoutBtn.style.display = "inline-block";
   await updateBalance();
 }
 
-// -------- LOGOUT --------
+// Logout
 logoutBtn.onclick = () => {
   localStorage.clear();
   location.reload();
 };
 
-// -------- UPDATE BALANCE --------
-async function updateBalance() {
-  try {
+// Update balance
+async function updateBalance(){
+  try{
     const res = await fetch(`${API}/user/balance`, {
-      headers: { Authorization: "Bearer " + localStorage.getItem("token") },
+      headers:{ Authorization:"Bearer "+localStorage.getItem("token") }
     });
     const data = await res.json();
-    if (data.success) {
+    if(data.success)
       document.getElementById("balance").innerText = `Balance: ₦${data.balance}`;
-    }
-  } catch (err) {
-    console.error(err);
-  }
+  }catch(err){ console.error(err); }
 }
 
-// -------- PAYSTACK DEPOSIT --------
-document.getElementById("depositBtn").onclick = async () => {
-  const amount = prompt("Enter deposit amount (₦):");
-  if (!amount) return;
+// Pay bills function (called from UI)
+async function payBill(type){
+  const amount = parseFloat(prompt(`Enter amount for ${type}:`));
+  if(!amount) return;
+  const description = prompt(`Enter description for ${type}:`) || type;
+  try{
+    const res = await fetch(`${API}/services/pay`, {
+      method:"POST",
+      headers:{ "Content-Type":"application/json", Authorization:"Bearer "+localStorage.getItem("token") },
+      body:JSON.stringify({ type, description, amount })
+    });
+    const data = await res.json();
+    if(data.success){
+      alert(`${type} payment successful! Reference: ${data.reference}`);
+      updateBalance();
+    } else alert(data.message);
+  }catch(err){ alert("Payment failed"); }
+}
+
+// Deposit function
+async function deposit(){
+  const amount = parseFloat(document.getElementById("depositAmount").value);
+  if(!amount) return alert("Enter deposit amount");
   const email = localStorage.getItem("email");
 
-  try {
+  try{
     const init = await fetch(`${API}/paystack/initialize`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("token"),
-      },
-      body: JSON.stringify({ amount, email }),
+      method:"POST",
+      headers:{ "Content-Type":"application/json", Authorization:"Bearer "+localStorage.getItem("token") },
+      body:JSON.stringify({ amount, email })
     });
     const data = await init.json();
-    if (data.data?.authorization_url) {
-      window.location.href = data.data.authorization_url;
-    } else {
-      alert("Error initializing payment");
-    }
-  } catch (err) {
-    console.error(err);
-  }
-};
-
-// -------- PAYBILLS BUTTONS --------
-document.querySelectorAll(".paybill-btn").forEach(btn => {
-  btn.onclick = () => {
-    const type = btn.getAttribute("data-type");
-    showService(type);
-  };
-});
-
-// -------- SHOW SERVICE FORM --------
-function showService(type) {
-  const form = document.getElementById("serviceForm");
-  const select = document.getElementById("optionSelect");
-  const amountInput = document.getElementById("amount");
-  const title = document.getElementById("serviceTitle");
-
-  form.style.display = "block";
-  title.innerText = `${type} Payment`;
-  select.innerHTML = "";
-  amountInput.value = "";
-
-  // Simple options for demonstration
-  if(type==="Airtime") ["MTN","GLO","AIRTEL","9MOBILE"].forEach(opt=>select.add(new Option(opt,opt)));
-  if(type==="Data") ["MTN","GLO","AIRTEL","9MOBILE"].forEach(opt=>select.add(new Option(opt,opt)));
-  if(type==="Electricity") ["EEDC","IKEDA","ABUJA"].forEach(opt=>select.add(new Option(opt,opt)));
-  if(type==="TV") ["DSTV","GOTV","STARTIMES"].forEach(opt=>select.add(new Option(opt,opt)));
-  if(type==="Transportation") ["Bus","Train","Taxi","Flight"].forEach(opt=>select.add(new Option(opt,opt)));
-
-  // Pay button
-  document.getElementById("payBtn").onclick = async () => {
-    let amount = Number(amountInput.value);
-    let description = select.value;
-    if(!amount || !description) return alert("Enter all details");
-
-    try{
-      const res = await fetch(`${API}/services/pay`, {
-        method:"POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer "+localStorage.getItem("token")
-        },
-        body: JSON.stringify({ type, description, amount })
-      });
-      const data = await res.json();
-      alert(data.message);
-      if(data.success) updateBalance();
-    } catch(err){
-      alert("Error processing payment");
-      console.error(err);
-    }
-  };
+    if(data.status){
+      alert("Payment initialized. Complete payment on Paystack popup.");
+      const reference = data.data.reference;
+      // Verify after a short delay for demo
+      setTimeout(async()=>{
+        const verify = await fetch(`${API}/paystack/verify`, {
+          method:"POST",
+          headers:{ "Content-Type":"application/json", Authorization:"Bearer "+localStorage.getItem("token") },
+          body:JSON.stringify({ reference })
+        });
+        const res = await verify.json();
+        if(res.success){
+          alert("Deposit successful!");
+          updateBalance();
+        } else alert(res.message);
+      }, 5000);
+    } else alert(data.message);
+  }catch(err){ alert("Deposit failed"); console.error(err); }
 }
+
+
 
 
 
