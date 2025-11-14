@@ -13,10 +13,6 @@ const passwordInput = document.getElementById("password");
 const logoutBtn = document.getElementById("logoutBtn");
 let isLogin = true;
 
-// -------- INITIAL UI STATE --------
-dashboard.style.display = "none";
-logoutBtn.style.display = "none";
-
 // Show dashboard if token exists
 if (token) showDashboard();
 
@@ -55,7 +51,7 @@ authBtn.onclick = async () => {
     });
     const data = await res.json();
 
-    if (data.success && data.token) {
+    if (data.token) {
       localStorage.setItem("token", data.token);
       localStorage.setItem("email", email);
       showDashboard();
@@ -74,15 +70,12 @@ async function showDashboard() {
   dashboard.style.display = "block";
   logoutBtn.style.display = "inline-block";
   await updateBalance();
-  attachPaybillHandlers(); // enable all paybill buttons
 }
 
 // -------- LOGOUT --------
 logoutBtn.onclick = () => {
   localStorage.clear();
-  dashboard.style.display = "none";
-  logoutBtn.style.display = "none";
-  authSection.style.display = "block";
+  location.reload();
 };
 
 // -------- UPDATE BALANCE --------
@@ -104,7 +97,6 @@ async function updateBalance() {
 document.getElementById("depositBtn").onclick = async () => {
   const amount = prompt("Enter deposit amount (₦):");
   if (!amount) return;
-
   const email = localStorage.getItem("email");
 
   try {
@@ -116,32 +108,27 @@ document.getElementById("depositBtn").onclick = async () => {
       },
       body: JSON.stringify({ amount, email }),
     });
-
     const data = await init.json();
-    if (!data.data || !data.data.authorization_url) {
+    if (data.data?.authorization_url) {
+      window.location.href = data.data.authorization_url;
+    } else {
       alert("Error initializing payment");
-      return;
     }
-
-    window.location.href = data.data.authorization_url;
   } catch (err) {
     console.error(err);
   }
 };
 
-// -------- PAYBILLS HANDLER --------
-function attachPaybillHandlers() {
-  const billButtons = document.querySelectorAll(".paybill-btn");
-  billButtons.forEach(btn => {
-    btn.onclick = () => {
-      const type = btn.dataset.type;
-      showServiceForm(type);
-    };
-  });
-}
+// -------- PAYBILLS BUTTONS --------
+document.querySelectorAll(".paybill-btn").forEach(btn => {
+  btn.onclick = () => {
+    const type = btn.getAttribute("data-type");
+    showService(type);
+  };
+});
 
 // -------- SHOW SERVICE FORM --------
-function showServiceForm(type) {
+function showService(type) {
   const form = document.getElementById("serviceForm");
   const select = document.getElementById("optionSelect");
   const amountInput = document.getElementById("amount");
@@ -152,74 +139,39 @@ function showServiceForm(type) {
   select.innerHTML = "";
   amountInput.value = "";
 
-  document.querySelectorAll(".extra-input").forEach(el => el.remove());
+  // Simple options for demonstration
+  if(type==="Airtime") ["MTN","GLO","AIRTEL","9MOBILE"].forEach(opt=>select.add(new Option(opt,opt)));
+  if(type==="Data") ["MTN","GLO","AIRTEL","9MOBILE"].forEach(opt=>select.add(new Option(opt,opt)));
+  if(type==="Electricity") ["EEDC","IKEDA","ABUJA"].forEach(opt=>select.add(new Option(opt,opt)));
+  if(type==="TV") ["DSTV","GOTV","STARTIMES"].forEach(opt=>select.add(new Option(opt,opt)));
+  if(type==="Transportation") ["Bus","Train","Taxi","Flight"].forEach(opt=>select.add(new Option(opt,opt)));
 
-  // Dynamic form fields for each service type
-  if (type === "Airtime" || type === "Data") {
-    ["MTN", "GLO", "AIRTEL", "9MOBILE"].forEach(opt => select.add(new Option(opt, opt)));
-    const phone = document.createElement("input");
-    phone.className = "extra-input";
-    phone.id = "phoneNumber";
-    phone.placeholder = "Enter Phone Number";
-    amountInput.insertAdjacentElement("beforebegin", phone);
-  }
-
-  if (type === "Electricity") {
-    ["Aba Power", "EEDC", "Ikeja Electric", "Abuja Disco"].forEach(opt => select.add(new Option(opt,opt)));
-    const meterNumber = document.createElement("input");
-    meterNumber.className = "extra-input";
-    meterNumber.id = "meterNumber";
-    meterNumber.placeholder = "Enter Meter Number";
-    amountInput.insertAdjacentElement("beforebegin", meterNumber);
-  }
-
-  if (type === "TV") {
-    ["DSTV","GOTV","Startimes"].forEach(opt => select.add(new Option(opt,opt)));
-    const smartCard = document.createElement("input");
-    smartCard.className = "extra-input";
-    smartCard.id = "smartCard";
-    smartCard.placeholder = "Enter Smart Card Number";
-    amountInput.insertAdjacentElement("beforebegin", smartCard);
-  }
-
-  if (type === "Transportation") {
-    ["Bus", "Train", "Taxi", "Flight"].forEach(opt => select.add(new Option(opt,opt)));
-    const passenger = document.createElement("input");
-    passenger.className = "extra-input";
-    passenger.id = "passengerId";
-    passenger.placeholder = "Enter Passenger ID / Booking Ref";
-    amountInput.insertAdjacentElement("beforebegin", passenger);
-  }
-
-  // -------- PAY BUTTON ----------
+  // Pay button
   document.getElementById("payBtn").onclick = async () => {
-    const amount = Number(amountInput.value);
-    const description = select.value;
-    if (!amount || !description) return alert("Please enter all details");
+    let amount = Number(amountInput.value);
+    let description = select.value;
+    if(!amount || !description) return alert("Enter all details");
 
-    let extra = {};
-    if (type === "Airtime" || type === "Data") extra.phone = document.getElementById("phoneNumber")?.value;
-    if (type === "Electricity") extra.meterNumber = document.getElementById("meterNumber")?.value;
-    if (type === "TV") extra.smartCard = document.getElementById("smartCard")?.value;
-    if (type === "Transportation") extra.passengerId = document.getElementById("passengerId")?.value;
-
-    try {
+    try{
       const res = await fetch(`${API}/services/pay`, {
-        method: "POST",
+        method:"POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: "Bearer " + localStorage.getItem("token"),
+          Authorization: "Bearer "+localStorage.getItem("token")
         },
-        body: JSON.stringify({ type, description, amount, ...extra }),
+        body: JSON.stringify({ type, description, amount })
       });
       const data = await res.json();
       alert(data.message);
-      if (data.success) updateBalance();
-    } catch (err) {
+      if(data.success) updateBalance();
+    } catch(err){
       alert("Error processing payment");
+      console.error(err);
     }
   };
 }
+
+
 
 
 
