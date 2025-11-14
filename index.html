@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PayMoment</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://js.paystack.co/v1/inline.js"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <h1>PayMoment</h1>
+    <div id="nav-right">
+      <span id="balance">Balance: ₦0</span>
+      <button id="logoutBtn">Logout</button>
+    </div>
+  </nav>
+
+  <div id="auth-section" class="card">
+    <h2 id="authTitle">Login</h2>
+    <input id="name" placeholder="Full Name" style="display:none" />
+    <input id="email" placeholder="Email" />
+    <input id="password" type="password" placeholder="Password" />
+    <button id="authBtn">Login</button>
+    <p id="toggleAuth">No account? <a href="#" id="switchAuth">Sign Up</a></p>
+  </div>
+
+  <div id="dashboard" style="display:none">
+    <h2>Available Services</h2>
+    <div class="services">
+      <div class="card service" onclick="showService('Airtime')">
+        <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" />
+        <p>Airtime</p>
+      </div>
+      <div class="card service" onclick="showService('Data')">
+        <img src="https://cdn-icons-png.flaticon.com/512/1828/1828919.png" />
+        <p>Data</p>
+      </div>
+      <div class="card service" onclick="showService('Electricity')">
+        <img src="https://cdn-icons-png.flaticon.com/512/1688/1688411.png" />
+        <p>Electricity</p>
+      </div>
+      <div class="card service" onclick="showService('Transportation')">
+        <img src="https://cdn-icons-png.flaticon.com/512/1072/1072322.png" />
+        <p>Transportation</p>
+      </div>
+      <div class="card service" onclick="showService('TV')">
+        <img src="https://cdn-icons-png.flaticon.com/512/0/89.png" />
+        <p>TV Subscription</p>
+      </div>
+    </div>
+
+    <button id="depositBtn">Deposit Money</button>
+
+    <div id="serviceForm" class="card" style="display:none">
+      <h3 id="serviceTitle"></h3>
+      <select id="optionSelect"></select>
+      <input id="amount" placeholder="Amount" type="number" />
+      <button id="payBtn">Pay</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

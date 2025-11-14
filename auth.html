@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PayMoment — Auth</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="auth-card">
+  <h2 id="authTitle">Login</h2>
+  <input type="email" id="email" placeholder="Email">
+  <input type="password" id="password" placeholder="Password">
+  <input type="text" id="name" placeholder="Full Name" style="display:none;">
+  <button id="authBtn">Login</button>
+  <div class="switch-auth" id="switchAuth">Don't have an account? Signup</div>
+</div>
+
+<script>
+const API = "https://paymomentbackend.onrender.com/api";
+let isLogin = true;
+const authTitle = document.getElementById("authTitle");
+const authBtn = document.getElementById("authBtn");
+const switchAuth = document.getElementById("switchAuth");
+const nameInput = document.getElementById("name");
+
+switchAuth.addEventListener("click", ()=>{
+  isLogin = !isLogin;
+  if(isLogin){
+    authTitle.textContent = "Login";
+    authBtn.textContent = "Login";
+    switchAuth.textContent = "Don't have an account? Signup";
+    nameInput.style.display = "none";
+  }else{
+    authTitle.textContent = "Signup";
+    authBtn.textContent = "Signup";
+    switchAuth.textContent = "Already have an account? Login";
+    nameInput.style.display = "block";
+  }
+});
+
+authBtn.addEventListener("click", async ()=>{
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+  const name = document.getElementById("name").value.trim();
+
+  if(!email || !password || (!isLogin && !name)) return alert("Complete all fields");
+
+  try{
+    const url = isLogin ? `${API}/auth/login` : `${API}/auth/signup`;
+    const body = isLogin ? {email,password} : {email,password,name};
+    const res = await fetch(url,{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify(body)
+    });
+    const data = await res.json();
+    if(data.success){
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("email", data.user.email);
+      localStorage.setItem("name", data.user.name || data.user.email);
+      window.location.href = "index.html"; // redirect to dashboard
+    }else{
+      alert(data.message || "Authentication failed");
+    }
+  }catch(err){
+    console.error(err);
+    alert("Server error");
+  }
+});
+</script>
+
+</body>
+</html>
