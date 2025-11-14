@@ -9,14 +9,17 @@
   #dashboard, #serviceForm, #logoutBtn { display: none; }
   button { margin: 5px; padding: 10px 20px; cursor: pointer; }
   input, select { margin: 5px 0; padding: 8px; width: 100%; }
-  .paybill-btn { background-color: #007bff; color: white; border: none; }
-  #logoutBtn { background-color: #dc3545; color: white; border: none; }
-  #depositBtn { background-color: #28a745; color: white; border: none; }
+  .paybill-btn { display:inline-block; margin:5px; padding:10px 15px; cursor:pointer; background:#007bff; color:#fff; border:none; border-radius:5px; }
+  #logoutBtn { background-color: #dc3545; color: white; border: none; border-radius:5px; }
+  #depositBtn { background-color: #28a745; color: white; border: none; border-radius:5px; }
+  #auth-section { max-width: 400px; margin: auto; }
+  #dashboard { max-width: 600px; margin: auto; }
+  #serviceForm { margin-top: 20px; }
 </style>
 </head>
 <body>
 
-<h2>PayMoment</h2>
+<h2 style="text-align:center;">PayMoment</h2>
 
 <!-- AUTH SECTION -->
 <div id="auth-section">
@@ -54,6 +57,8 @@
 <script src="script.js"></script>
 </body>
 </html>
+
+
 
 
 
